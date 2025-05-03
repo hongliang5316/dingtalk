@@ -56,7 +56,7 @@ func TestTextMsgWithCtx(t *testing.T) {
 }
 
 func TestLinkMsg(t *testing.T) {
-	err := dingTalkCli.SendLinkMessage("Link title", "Link test.", testImg, testUrl)
+	err := dingTalkCli.SendLinkMessage("Link title", "Link test.", testImg, testUrl, WithPcSlideOpen(true))
 	if err != nil {
 		t.Errorf("TestLinkMsg expected be nil, but %v got", err)
 	}
@@ -96,8 +96,9 @@ func TestSendMarkDownMessageByList(t *testing.T) {
 
 func TestActionCardMultiMsg(t *testing.T) {
 	Btns := []ActionCardMultiBtnModel{{
-		Title:     "test1",
-		ActionURL: testUrl,
+		Title:       "test1",
+		ActionURL:   testUrl,
+		PcSlideOpen: &DingTrue,
 	}, {
 		Title:     "test2",
 		ActionURL: testUrl,
@@ -137,14 +138,16 @@ func TestActionCardMultiMsgBySlice(t *testing.T) {
 func TestFeedCardMsg(t *testing.T) {
 	links := []FeedCardLinkModel{
 		{
-			Title:      "FeedCard1.",
-			MessageURL: testUrl,
-			PicURL:     testImg,
+			Title:       "FeedCard1.",
+			MessageURL:  testUrl,
+			PicURL:      testImg,
+			PcSlideOpen: &DingTrue,
 		},
 		{
-			Title:      "FeedCard2",
-			MessageURL: testUrl,
-			PicURL:     testImg,
+			Title:       "FeedCard2",
+			MessageURL:  testUrl,
+			PicURL:      testImg,
+			PcSlideOpen: &DingFalse,
 		},
 		{
 			Title:      "FeedCard3",

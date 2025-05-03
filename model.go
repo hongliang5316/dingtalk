@@ -3,6 +3,7 @@ package dingtalk
 import (
 	"encoding/json"
 	"fmt"
+	"net/url"
 	"strings"
 )
 
@@ -73,13 +74,17 @@ func (l linkMsg) Marshaler() []byte {
 	return b
 }
 
-func NewLinkMsg(title, text, picUrl, msgUrl string) *linkMsg {
-	return &linkMsg{MsgType: LINK, Link: linkModel{
+func NewLinkMsg(title, text, picUrl, msgUrl string, opts ...linkOption) *linkMsg {
+	msg := &linkMsg{MsgType: LINK, Link: linkModel{
 		Text:       text,
 		Title:      title,
 		PicUrl:     picUrl,
 		MessageUrl: msgUrl,
 	}}
+	for _, opt := range opts {
+		opt.apply(&msg.Link)
+	}
+	return msg
 }
 
 type markDownMsg struct {
@@ -174,6 +179,14 @@ type actionCardMsg struct {
 }
 
 func (a actionCardMsg) Marshaler() []byte {
+	if a.ActionCard.PcSlideOpen != nil {
+		a.ActionCard.SingleURL = fmt.Sprintf(pcSlideOpenUrlFormat, url.QueryEscape(a.ActionCard.SingleURL), a.ActionCard.PcSlideOpen)
+	}
+	for i, v := range a.ActionCard.Btns {
+		if v.PcSlideOpen != nil {
+			a.ActionCard.Btns[i].ActionURL = fmt.Sprintf(pcSlideOpenUrlFormat, url.QueryEscape(v.ActionURL), v.PcSlideOpen)
+		}
+	}
 	b, _ := json.Marshal(a)
 	return b
 }
@@ -196,6 +209,11 @@ type feedCardMsg struct {
 }
 
 func (f feedCardMsg) Marshaler() []byte {
+	for i, v := range f.FeedCard.Links {
+		if v.PcSlideOpen != nil {
+			f.FeedCard.Links[i].MessageURL = fmt.Sprintf(pcSlideOpenUrlFormat, url.QueryEscape(f.FeedCard.Links[i].MessageURL), v.PcSlideOpen)
+		}
+	}
 	b, _ := json.Marshal(f)
 	return b
 }

@@ -1,6 +1,10 @@
 package dingtalk
 
-import "time"
+import (
+	"fmt"
+	"net/url"
+	"time"
+)
 
 type msgTypeType string
 
@@ -62,6 +66,27 @@ type atModel struct {
 	IsAtAll   bool     `json:"isAtAll,omitempty"`
 }
 
+type linkOption interface {
+	apply(model *linkModel)
+}
+type funcLinkOption struct {
+	f func(model *linkModel)
+}
+
+func newFuncLinkOption(f func(model *linkModel)) *funcLinkOption {
+	return &funcLinkOption{f: f}
+}
+
+func (fdo *funcLinkOption) apply(do *linkModel) {
+	fdo.f(do)
+}
+
+func WithPcSlideOpen(v bool) linkOption {
+	return newFuncLinkOption(func(o *linkModel) {
+		o.MessageUrl = fmt.Sprintf(pcSlideOpenUrlFormat, url.QueryEscape(o.MessageUrl), v)
+	})
+}
+
 type linkModel struct {
 	Text       string `json:"text,omitempty"`
 	Title      string `json:"title,omitempty"`
@@ -88,11 +113,13 @@ type actionCardModel struct {
 	SingleTitle    string                       `json:"singleTitle,omitempty"`
 	SingleURL      string                       `json:"singleURL,omitempty"`
 	Btns           []ActionCardMultiBtnModel    `json:"btns,omitempty"`
+	PcSlideOpen    *bool                        `json:"-"`
 }
 
 type ActionCardMultiBtnModel struct {
-	Title     string `json:"title,omitempty"`
-	ActionURL string `json:"actionURL,omitempty"`
+	Title       string `json:"title,omitempty"`
+	ActionURL   string `json:"actionURL,omitempty"`
+	PcSlideOpen *bool  `json:"-"`
 }
 
 type feedCardModel struct {
@@ -100,9 +127,10 @@ type feedCardModel struct {
 }
 
 type FeedCardLinkModel struct {
-	Title      string `json:"title,omitempty"`
-	MessageURL string `json:"messageURL,omitempty"`
-	PicURL     string `json:"picURL,omitempty"`
+	Title       string `json:"title,omitempty"`
+	MessageURL  string `json:"messageURL,omitempty"`
+	PicURL      string `json:"picURL,omitempty"`
+	PcSlideOpen *bool  `json:"-"`
 }
 
 type outGoingModel struct {

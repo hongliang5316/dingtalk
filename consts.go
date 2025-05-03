@@ -2,7 +2,11 @@ package dingtalk
 
 const dingTalkURL = "https://oapi.dingtalk.com/robot/send?"
 const dtmdFormat = "[%s](dtmd://dingtalkclient/sendMessage?content=%s)"
+const pcSlideOpenUrlFormat = "dingtalk://dingtalkclient/page/link?url=%s&pc_slide=%v"
 const formatSpliter = "$$"
+
+var DingTrue = true
+var DingFalse = false
 
 const (
 	H1    MarkType = "h1"

@@ -71,6 +71,9 @@ func (d *DingTalk) sendMessage(ctx context.Context, msg iDingMsg) error {
 	if err != nil {
 		return err
 	}
+	defer func(Body io.ReadCloser) {
+		_ = Body.Close()
+	}(resp.Body)
 	if resp.StatusCode != http.StatusOK {
 		return fmt.Errorf("send msg err. http code: %d, token: %s, msg: %s", resp.StatusCode, d.robotToken, msg.Marshaler())
 	}
@@ -128,9 +131,9 @@ func (d *DingTalk) SendMarkDownMessageBySlice(title string, textList []string, o
 	return d.sendMessageNoCtx(NewMarkDownMsg(title, text, opts...))
 }
 
-func (d *DingTalk) SendLinkMessage(title, text, picUrl, msgUrl string) error {
+func (d *DingTalk) SendLinkMessage(title, text, picUrl, msgUrl string, opts ...linkOption) error {
 	title = title + d.keyWord
-	return d.sendMessageNoCtx(NewLinkMsg(title, text, picUrl, msgUrl))
+	return d.sendMessageNoCtx(NewLinkMsg(title, text, picUrl, msgUrl, opts...))
 }
 
 func (d *DingTalk) SendActionCardMessage(title, text string, opts ...actionCardOption) error {
