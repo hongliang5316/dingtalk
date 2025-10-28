@@ -9,9 +9,7 @@ import (
 	"time"
 )
 
-var (
-	myHTTPClient *http.Client
-)
+var myHTTPClient *http.Client
 
 const (
 	defaultDialTimeout = 2 * time.Second
@@ -35,6 +33,10 @@ func initDefaultHTTPClient() *http.Client {
 		Timeout: defaultDialTimeout,
 	}
 	return client
+}
+
+func SetHTTPClient(hc *http.Client) {
+	myHTTPClient = hc
 }
 
 func doRequest(ctx context.Context, callMethod string, endPoint string, header map[string]string, body []byte) (*http.Response, error) {
